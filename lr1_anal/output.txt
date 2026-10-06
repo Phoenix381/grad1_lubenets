@@ -1,0 +1,342 @@
+Задача раскроя. Лист 3x5
+Режим: не меньше
+A(3x2, нужно 21)
+B(2x2, нужно 15)
+C(1x3, нужно 22)
+D(1x2, нужно 31)
+Всего карт: 40
+
+Карта 1:
+A A A 
+A A A 
+A A A 
+A A A 
+C C C 
+Фигур: A=2 C=1 
+
+Карта 2:
+B B C 
+B B C 
+B B C 
+B B D 
+D D D 
+Фигур: B=2 C=1 D=2 
+
+Карта 3:
+B B C 
+B B C 
+C C C 
+C C D 
+C C D 
+Фигур: B=1 C=3 D=1 
+
+Карта 4:
+B B D 
+B B D 
+C D D 
+C D D 
+C D D 
+Фигур: B=1 C=1 D=4 
+
+Карта 5:
+A A A 
+A A A 
+C D D 
+C D D 
+C D D 
+Фигур: A=1 C=1 D=3 
+
+Карта 6:
+C C C 
+C C C 
+C C C 
+C C C 
+C C C 
+Фигур: C=5 
+
+Карта 7:
+A A A 
+A A A 
+C C C 
+C C C 
+C C C 
+Фигур: A=1 C=3 
+
+Карта 8:
+C C C 
+C C C 
+C C C 
+D D D 
+D D D 
+Фигур: C=3 D=3 
+
+Карта 9:
+A A A 
+A A A 
+B B C 
+B B C 
+D D C 
+Фигур: A=1 B=1 C=1 D=1 
+
+Карта 10:
+C D D 
+C D D 
+C D D 
+D D D 
+D D D 
+Фигур: C=1 D=6 
+
+Карта 11:
+A A A 
+A A A 
+B B D 
+B B D 
+D D . 
+Фигур: A=1 B=1 D=2 
+
+Карта 12:
+B B C 
+B B C 
+B B C 
+B B . 
+C C C 
+Фигур: B=2 C=2 
+
+Карта 13:
+B B D 
+B B D 
+B B D 
+B B D 
+D D . 
+Фигур: B=2 D=3 
+
+Карта 14:
+A A A 
+A A A 
+D D D 
+D D D 
+D D . 
+Фигур: A=1 D=4 
+
+Карта 15:
+D D D 
+D D D 
+D D D 
+D D D 
+D D . 
+Фигур: D=7 
+
+Карта 16:
+B B D 
+B B D 
+C C D 
+C C D 
+C C . 
+Фигур: B=1 C=2 D=2 
+
+Карта 17:
+A A A 
+A A A 
+A A A 
+A A A 
+D D . 
+Фигур: A=2 D=1 
+
+Карта 18:
+B B D 
+B B D 
+D D D 
+D D D 
+D D . 
+Фигур: B=1 D=5 
+
+Карта 19:
+A A A 
+A A A 
+C C D 
+C C D 
+C C . 
+Фигур: A=1 C=2 D=1 
+
+Карта 20:
+C C C 
+C C C 
+C C C 
+C C C 
+D D . 
+Фигур: C=4 D=1 
+
+Карта 21:
+C C D 
+C C D 
+C C D 
+D D D 
+D D . 
+Фигур: C=2 D=4 
+
+Карта 22:
+C D D 
+C D D 
+C D . 
+D D D 
+D . D 
+Фигур: C=1 D=5 
+
+Карта 23:
+B B D 
+B B D 
+C D . 
+C D D 
+C . D 
+Фигур: B=1 C=1 D=3 
+
+Карта 24:
+A A A 
+A A A 
+C D . 
+C D D 
+C . D 
+Фигур: A=1 C=1 D=2 
+
+Карта 25:
+B B . 
+B B C 
+C C C 
+C C C 
+C C . 
+Фигур: B=1 C=3 
+
+Карта 26:
+A A . 
+A A C 
+A A C 
+B B C 
+B B . 
+Фигур: A=1 B=1 C=1 
+
+Карта 27:
+C C C 
+C C C 
+C C C 
+D D . 
+. D D 
+Фигур: C=3 D=2 
+
+Карта 28:
+B B C 
+B B C 
+B B C 
+B B . 
+. D D 
+Фигур: B=2 C=1 D=1 
+
+Карта 29:
+B B . 
+B B C 
+C . C 
+C D C 
+C D . 
+Фигур: B=1 C=2 D=1 
+
+Карта 30:
+A A A 
+A A A 
+D . D 
+D D D 
+. D . 
+Фигур: A=1 D=3 
+
+Карта 31:
+B B . 
+B B D 
+B B D 
+B B . 
+. D D 
+Фигур: B=2 D=2 
+
+Карта 32:
+B B . 
+B B D 
+D D D 
+D D . 
+. D D 
+Фигур: B=1 D=4 
+
+Карта 33:
+C . C 
+C C C 
+C C C 
+. C . 
+C C C 
+Фигур: C=4 
+
+Карта 34:
+C C D 
+C C D 
+C C . 
+. D D 
+D D . 
+Фигур: C=2 D=3 
+
+Карта 35:
+D D . 
+D D D 
+D D D 
+D D . 
+. D D 
+Фигур: D=6 
+
+Карта 36:
+B B . 
+B B C 
+D . C 
+D D C 
+. D . 
+Фигур: B=1 C=1 D=2 
+
+Карта 37:
+. C . 
+C C C 
+C C C 
+C D C 
+. D . 
+Фигур: C=3 D=1 
+
+Карта 38:
+C D . 
+C D D 
+C . D 
+D D . 
+. D D 
+Фигур: C=1 D=4 
+
+Карта 39:
+. D . 
+D D D 
+D . D 
+D D . 
+. D D 
+Фигур: D=5 
+
+Карта 40:
+. D . 
+C D C 
+C . C 
+C D C 
+. D . 
+Фигур: C=2 D=2 
+
+Минимум листов: 21
+
+x1 = 10 (A=2 C=1 )
+x2 = 6 (B=2 C=1 D=2 )
+x9 = 1 (A=1 B=1 C=1 D=1 )
+x10 = 3 (C=1 D=6 )
+x12 = 1 (B=2 C=2 )
+
+Выпуск (нужно / получилось):
+  A: 21 / 21
+  B: 15 / 15
+  C: 22 / 22
+  D: 31 / 31
+Всего листов: 21
