@@ -1,0 +1,9 @@
+#include<iostream>
+#include<cmath>
+#include<string>
+#define q std::cout
+#define w(a,b,c) "\33[38;2;"+std::to_string(a)+";"+std::to_string(b)+";"+std::to_string(c)+"m"
+#define e(x) (int)((x)*255+0.5)
+std::string P[]={"⣿⣿⣿⣿⣿⣿⣿⣿⠟⠛⢉⢉⠉⠉⠻⣿","⣿⣿⣿⣿⣿⣿⠟⠠⡰⣕⣗⣷⣧⣀⣅⠘⣿","⣿⣿⣿⣿⣿⠃⣠⣳⣟⣿⣷⣿⡿⣜⠄⣿","⣿⣿⣿⡿⠁⠄⣳⢷⣿⣿⣿⣿⡿⣝⠖⠄⣿","⣿⣿⣿⠃⠄⢢⡹⣿⢷⣯⢿⢷⡫⣗⠍⢰⣿","⣿⣿⡏⢀⢄⠤⣁⠋⠿⣗⣟⡯⡏⢎⠁⢸⣿","⣿⣿⠄⢔⢕⣯⣿⣿⡲⡤⡄⡤⠄⡀⢠⣿","⣿⠇⠠⡳⣯⣿⣿⣾⢵⣫⢎⢎⠆⢀⣿","⣿⠄⢨⣫⣿⣿⡿⣿⣻⢎⡗⡕⡅⢸⣿","⣿⠄⢜⢾⣾⣿⣿⣟⣗⢯⡪⡳⡀⢸⣿","⣿⠄⢸⢽⣿⣷⣿⣻⡮⡧⡳⡱⡁⢸⣿","⣿⡄⢨⣻⣽⣿⣟⣿⣞⣗⡽⡸⡐⢸⣿","⣿⡇⢀⢗⣿⣿⣿⣿⡿⣞⡵⡣⣊⢸⣿","⣿⣿⡀⡣⣗⣿⣿⣿⣿⣯⡯⡺⣼⠎⣿","⣿⣿⣧⠐⡵⣻⣟⣯⣿⣷⣟⣝⢞⡿⢹⣿","⣿⣿⣿⡆⢘⡺⣽⢿⣻⣿⣗⡷⣹⢩⢃⢿⣿","⣿⣿⣿⣷⠄⠪⣯⣟⣿⢯⣿⣻⣜⢎⢆⠜⣿","⣿⣿⣿⣿⡆⠄⢣⣻⣽⣿⣿⣟⣾⡮⡺⡸⠸⣿","⣿⡿⠛⠉⠁⠄⢕⡳⣽⡾⣿⢽⣯⡿⣮⢚⣅⠹⣿","⣿⠂⠈⠐⢕⡳⣽⣾⣿⣿⣿⢽⣯⡿⣮⢚⣅⣿","⣿⣷⣤⣀⠀⠈⠙⣽⣾⣿⣿⣿⣿⣯⡿⡮⡺⣿","⣿⣿⣿⣷⣦⣀⡀⠀⠉⠻⣿⣿⣿⣿⣟⣾⡿⣿","⣿⣿⣿⣿⣿⣷⣦⣄⣀⡀⠀⠉⠛⠿⣿⣿⣿⣿⣿","⣿⣿⣿⣿⣿⣿⣿⣷⣦⣤⣤⣀⣀⣤⣤⣿⣿⣿⣿","⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣿⣿⣿⣿⣿⣿⣿"};
+int main(){
+for(int A=0;A<25;A++){auto&S=P[A];int C=0;for(size_t I=0;I<S.size();){unsigned char B=S[I];unsigned int U;int L;if(B<0x80){U=B;L=1;}else if((B&0xE0)==0xC0){U=((B&0x1F)<<6)|((unsigned char)S[I+1]&0x3F);L=2;}else if((B&0xF0)==0xE0){U=((B&0x0F)<<12)|(((unsigned char)S[I+1]&0x3F)<<6)|((unsigned char)S[I+2]&0x3F);L=3;}else{U=B;L=1;}int D=0;if(U>=0x2800&&U<=0x28FF){for(unsigned int Q=U-0x2800;Q;Q&=Q-1)++D;}else D=4;double H=fmod(A*25.0+C*37.0+45.0*sin(A*0.55)+35.0*cos(C*0.75)+20.0*sin((A+C)*1.10)+15.0*cos((A-C)*1.70),360.0);if(H<0)H+=360.0;double W=0.78+(8-D)*0.028;if(W>1)W=1;double K=W*0.92,E=K*(1-std::abs(std::fmod(H/60.0,2.0)-1)),M=W-K;double R=0,G=0,Bl=0;int J=(int)(H/60.0);if(J==0){R=K;G=E;}else if(J==1){R=E;G=K;}else if(J==2){G=K;Bl=E;}else if(J==3){G=E;Bl=K;}else if(J==4){R=E;Bl=K;}else{R=K;Bl=E;}q<<w(e(R+M),e(G+M),e(Bl+M))<<S.substr(I,L)<<"\33[0m";I+=L;++C;}q<<"\n";}return 0;}
