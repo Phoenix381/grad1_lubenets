@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <sstream>
+#include <numeric>
 
 //#define DEBUG
 
@@ -67,6 +68,30 @@ vector<vector<double>> intersect(const vector<vector<double>>& matrix1,const vec
     return ans;
     
 }
+vector<vector<double>> Q2(const vector<vector<double>>& matrix,double l){
+    vector<vector<double>>ans = matrix;
+    for (auto &r : ans) {
+        for (auto &el : r) {
+            el *= l;
+        }
+    }
+    
+    return ans;
+    
+}
+
+vector<vector<double>> summ(const vector<vector<double>>& matrix1,const vector<vector<double>>& matrix2){
+    vector<vector<double>>ans = matrix1;
+    for (int i = 0; i < ans.size(); i++)
+    {
+        for (int j = 0; j < matrix1[0].size(); j++)
+        {
+            ans[i][j]+=matrix2[i][j];
+        }
+    }
+    return ans;
+}
+
 
 vector<vector<double>> FSPR(vector<vector<double>> Q){
     vector<vector<double>> ans = Q;
@@ -98,7 +123,7 @@ void solve() {
     freopen("input.txt", "r", stdin);
     cout.precision(10);
 
-    
+    vector<vector<double>> L;read_matrix(&L);
     vector<vector<double>> R1;read_matrix(&R1);
     vector<vector<double>> R2;read_matrix(&R2);
     vector<vector<double>> R3;read_matrix(&R3);
@@ -112,7 +137,60 @@ void solve() {
         Q = intersect(Q, *m);
     }
 
+    cout<<"Q1\n";
+    for(auto a:(Q)){
+        for(auto aa :a){
+            cout<<aa<<" ";
+        }
+        cout<<"\n";
+    }
 
+    cout<<"\n Q1s\n";
+    for(auto a:FSPR(Q)){
+        for(auto aa :a){
+            cout<<aa<<" ";
+        }
+        cout<<"\n";
+    }
+
+    cout<<"\nmyu н.д.Q1 ";
+    vector<double> m1 = mu(FSPR(Q));
+    for(auto a:m1){
+        cout<<a<<" ";
+    }
+    vector<vector<double>> Q_2 = Q2(R1,L[0][0]);
+    cout<<"\n"<<L[0][0]<<"\n";
+
+    for (auto &m : {std::pair{&R2, L[0][1]}, std::pair{&R3, L[0][2]},
+                    std::pair{&R4, L[0][3]}, std::pair{&R5, L[0][4]},
+                    std::pair{&R6, L[0][5]}, std::pair{&R7, L[0][6]}}) {
+        Q_2 = summ(Q_2,Q2(*m.first, m.second));
+    }
+
+    cout<<"\nQ2\n";
+    for(auto a:Q_2){
+        for(auto aa :a){
+            cout<<aa<<" ";
+        }
+        cout<<"\n";
+    }
+
+    cout<<"\n Q2s\n";
+    for(auto a:FSPR(Q_2)){
+        for(auto aa :a){
+            cout<<aa<<" ";
+        }
+        cout<<"\n";
+    }
+
+    cout<<"\nmyu н.д.Q2 ";
+    vector<double> m2 = mu(FSPR(Q_2));
+    for(auto a:m2){
+        cout<<a<<" ";
+    }
+    int ind = [&]{ int k = 0; for (int i = 1; i < (int)m1.size(); ++i) if (std::min(m1[i],m2[i]) > std::min(m1[k],m2[k])) k = i; return k; }();
+
+    cout << "\n\nОтвет: оптимальная альтернатива x"<<ind+1<<", "<<"мю(x"<<ind+1<<")"<<" = "<<min(m1[ind],m2[ind])<<"\n";
 }
 
 #ifdef DEBUG
