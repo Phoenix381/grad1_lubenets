@@ -1,4 +1,11 @@
-#include <bits/stdc++.h>
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <functional>
+#include <utility>
+#include <algorithm>
+
 using namespace std;
 using ll = long long;
 const ll INF = 1e18;
