@@ -33,54 +33,11 @@
 #include <cmath>
 #include <iomanip>
 #include <algorithm>
-#include <sstream>
 #include <numeric>
 
 //#define DEBUG
 
 using namespace std;
-
-void print_matrix(const vector<vector<double>> &vctr) {
-    for (auto r : vctr) {
-        for (auto n : r) {
-            cout << n << " ";
-        }
-        cout << '\n';
-    }
-}
-
-void read_matrix(vector<vector<double>> *vctr) {
-    vctr->clear();
-
-    string s;
-    while (getline(cin, s)) {
-        if (!s.empty() && s.back() == '\r') s.pop_back();
-
-        if (s.find_first_not_of(" \t") == string::npos) {
-            if (!vctr->empty()) return;
-            else continue;
-        }
-
-        if (!s.empty() && s[0] == ':') continue;
-
-        replace(s.begin(), s.end(), ',', '.');
-
-        vctr->push_back(vector<double>());
-
-        stringstream ss(s);
-        string token;
-        while (ss >> token) {
-            size_t slash = token.find('/');
-            if (slash != string::npos) {
-                double num = stod(token.substr(0, slash));
-                double den = stod(token.substr(slash + 1));
-                vctr->back().push_back(num / den);
-            } else {
-                vctr->back().push_back(stod(token));
-            }
-        }
-    }
-}
 
 double calc_concordance(const vector<vector<double>>& vctr) {
     int m = vctr.size();
@@ -103,11 +60,18 @@ double calc_concordance(const vector<vector<double>>& vctr) {
 }
 
 void solve() {
-    freopen("input.txt", "r", stdin);
     cout.precision(10);
 
-    vector<vector<double>> E;
-    read_matrix(&E);
+    // Вариант 4 (task_lubenets/prun/LR-4.pdf)
+    vector<vector<double>> E = {
+        {1, 2, 3, 4, 5, 6, 10, 8, 9, 7},
+        {1, 2, 6, 4, 5, 3, 7, 8, 9, 10},
+        {1, 4, 2, 5, 3, 6, 7, 9, 8, 10},
+        {2, 1, 3, 4, 5, 7, 6, 8, 10, 9},
+        {1, 2, 3, 4, 7, 6, 5, 8, 9, 10},
+        {1, 2, 3, 4, 5, 6, 8, 7, 9, 10},
+        {2, 1, 6, 4, 5, 8, 7, 3, 9, 10}
+    };
 
     double R_all = calc_concordance(E);
     cout << "R = " << R_all << "\n";

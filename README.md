@@ -13,7 +13,7 @@
 
 Методичка: `task_lubenets/prun/metod.pdf`.
 
-> В `lr*/input.txt` лежат примеры исходных данных, а не вариант 4. Вариант 4 посчитан в `reports/prun1.tex` и `reports/prun2.tex`.
+> Все лабораторные ПРУН используют данные варианта 4. В `lr1` и `lr2` они находятся в `input.txt`, в `lr3` и `lr4` — зашиты в `main.cpp`.
 
 ## ИОСА — `lr*_anal`
 
