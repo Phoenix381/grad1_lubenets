@@ -91,11 +91,13 @@ void print_ans(const vector<double> &ans){
 void solve() {
     freopen("input.txt", "r", stdin);
     cout.precision(10);
+    // матрица парных сравнений критериев
     vector<vector<double>> E;
     read_matrix(&E);
     cout << "E:\n";
     print_matrix(E);
 
+    // матрицы парных сравнений альтернатив по каждому критерию
     vector<vector<double>> W[7];
     for (int i = 0; i < 7; i++) {
         read_matrix(&W[i]);
@@ -117,6 +119,7 @@ void solve() {
         cout << "\n";
     }
 
+    // итоговые приоритеты альтернатив
     size_t n = w[0].size();
     vector<double> result(n, 0.0);
     for (size_t i = 0; i < e.size(); i++)

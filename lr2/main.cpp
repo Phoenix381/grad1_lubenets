@@ -150,7 +150,7 @@ pair<int,double> сэвиджа(const vector<vector<int>>& matrix){
     return ans;
 }
 
-// [0,m) -> M [m,2m) -> N
+// в первой половине — минимумы строк, во второй — максимумы
 pair<int,double> гурвиц(const vector<vector<int>>& matrix){
     vector<int> ans(2*matrix.size());
 
@@ -190,6 +190,7 @@ void solve() {
     freopen("input.txt", "r", stdin);
     cout.precision(10);
     
+    // матрица выигрышей
     vector<vector<int>> A;
     
     read_matrix(&A);
@@ -197,6 +198,7 @@ void solve() {
     
     freopen("output.txt", "w", stdout);
     
+    // проверяем критерии Вальда, Сэвиджа, Гурвица, Байеса и Ходжа
     pair<int,double> q1 = вальда(A);
     cout<<"по критерию Вальда: "<<q1.second<<" при стратегии "<<q1.first<<'\n';
     

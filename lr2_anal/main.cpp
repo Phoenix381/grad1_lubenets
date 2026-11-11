@@ -5,6 +5,8 @@
 #include <functional>
 #include <utility>
 #include <algorithm>
+#include <sstream>
+#include <fstream>
 
 using namespace std;
 using ll = long long;
@@ -60,8 +62,9 @@ int main(){
     vector<ll> a = {0,17,13,13,12,18,19};
     vector<ll> b = {0,10,14,13,10,12,11,22};
     vector<ll> capD = {0,23,17,20,21,22};
+    // матрицы стоимостей; нулевые строка и столбец пустые — индексация с 1
     vector<vector<ll>> cAD = {
-        {}, // 0
+        {},
         {0,6,6,6,7,9},
         {0,7,5,7,2,9},
         {0,6,3,7,2,6},
@@ -82,6 +85,7 @@ int main(){
     int A0=1, D0in=7, D0out=12, B0=17;
     g.assign(25, {});
 
+    // поток: склады A -> переработка D -> склады B
     ll total=0;
     for(int i=1;i<=6;i++){ addEdge(S, A0+i-1, a[i], 0); total+=a[i]; }
     for(int j=1;j<=5;j++){
@@ -94,29 +98,38 @@ int main(){
             addEdge(D0out+j-1, B0+k-1, INF, cDB[j][k]);
     for(int k=1;k<=7;k++) addEdge(B0+k-1, T, b[k], 0);
 
+    // минимальная стоимость максимального потока
     auto [flow, cost] = minCostFlow(S, T, total);
-    cout << "Поток = " << flow << " / " << total << "\n";
-    cout << "Минимальная стоимость = " << cost << "\n\n";
 
-    cout << "Матрица X (A->D), 6x5:\n";
+    // восстанавливаем потоки по обратным рёбрам
+    ostringstream out;
+    out << "Поток = " << flow << " / " << total << "\n";
+    out << "Минимальная стоимость = " << cost << "\n\n";
+
+    out << "Матрица X (A->D), 6x5:\n";
     for(int i=1;i<=6;i++){
         for(int j=1;j<=5;j++){
             int u = A0+i-1, v = D0in+j-1;
             ll used = 0;
             for(auto &e : g[v]) if(e.to==u && e.cap>0) used = e.cap;
-            cout << used << "\t";
+            out << used << "\t";
         }
-        cout << "\n";
+        out << "\n";
     }
-    cout << "\nМатрица Y (D->B), 5x7:\n";
+    out << "\nМатрица Y (D->B), 5x7:\n";
     for(int j=1;j<=5;j++){
         for(int k=1;k<=7;k++){
             int u = D0out+j-1, v = B0+k-1;
             ll used = 0;
             for(auto &e : g[v]) if(e.to==u && e.cap>0) used = e.cap;
-            cout << used << "\t";
+            out << used << "\t";
         }
-        cout << "\n";
+        out << "\n";
     }
+
+    cout << out.str();
+    ofstream fout("output.txt");
+    fout << out.str();
+
     return 0;
 }

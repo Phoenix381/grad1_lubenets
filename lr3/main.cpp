@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <utility>
 #include <cstdlib>
+#include <sstream>
+#include <fstream>
 
 //#define DEBUG
 
@@ -79,7 +81,8 @@ vector<double> mu(vector<vector<double>> Q){
     
 }
 void solve() {
-    cout.precision(10);
+    ostringstream out;
+    out.precision(10);
 
     // Вариант 4 (task_lubenets/prun/LR-3.pdf)
     vector<vector<double>> L = {{0.1, 0.2, 0.1, 0.1, 0.3, 0.1, 0.1}};
@@ -140,34 +143,37 @@ void solve() {
         {0.7, 0.3, 0.4, 0.8, 0.6, 1}
     };
 
+    // Q1 — пересечение матриц парных сравнений
     vector<vector<double>> Q = R1;
     for (auto *m : {&R2, &R3, &R4, &R5, &R6, &R7}) {
         Q = intersect(Q, *m);
     }
 
-    cout<<"Q1\n";
+    out<<"Q1\n";
     for(auto a:(Q)){
         for(auto aa :a){
-            cout<<aa<<" ";
+            out<<aa<<" ";
         }
-        cout<<"\n";
+        out<<"\n";
     }
 
-    cout<<"\n Q1s\n";
+    out<<"\n Q1s\n";
     for(auto a:FSPR(Q)){
         for(auto aa :a){
-            cout<<aa<<" ";
+            out<<aa<<" ";
         }
-        cout<<"\n";
+        out<<"\n";
     }
 
-    cout<<"\nmyu н.д.Q1 ";
+    out<<"\nmyu н.д.Q1 ";
+    // степени недоминируемости по Q1
     vector<double> m1 = mu(FSPR(Q));
     for(auto a:m1){
-        cout<<a<<" ";
+        out<<a<<" ";
     }
+    // Q2 — свёртка матриц с весами критериев
     vector<vector<double>> Q_2 = Q2(R1,L[0][0]);
-    cout<<"\n"<<L[0][0]<<"\n";
+    out<<"\n"<<L[0][0]<<"\n";
 
     for (auto &m : {std::pair{&R2, L[0][1]}, std::pair{&R3, L[0][2]},
                     std::pair{&R4, L[0][3]}, std::pair{&R5, L[0][4]},
@@ -175,30 +181,35 @@ void solve() {
         Q_2 = summ(Q_2,Q2(*m.first, m.second));
     }
 
-    cout<<"\nQ2\n";
+    out<<"\nQ2\n";
     for(auto a:Q_2){
         for(auto aa :a){
-            cout<<aa<<" ";
+            out<<aa<<" ";
         }
-        cout<<"\n";
+        out<<"\n";
     }
 
-    cout<<"\n Q2s\n";
+    out<<"\n Q2s\n";
     for(auto a:FSPR(Q_2)){
         for(auto aa :a){
-            cout<<aa<<" ";
+            out<<aa<<" ";
         }
-        cout<<"\n";
+        out<<"\n";
     }
 
-    cout<<"\nmyu н.д.Q2 ";
+    out<<"\nmyu н.д.Q2 ";
     vector<double> m2 = mu(FSPR(Q_2));
     for(auto a:m2){
-        cout<<a<<" ";
+        out<<a<<" ";
     }
+    // берём альтернативу с лучшим минимумом из двух оценок
     int ind = [&]{ int k = 0; for (int i = 1; i < (int)m1.size(); ++i) if (std::min(m1[i],m2[i]) > std::min(m1[k],m2[k])) k = i; return k; }();
 
-    cout << "\n\nОтвет: оптимальная альтернатива x"<<ind+1<<", "<<"мю(x"<<ind+1<<")"<<" = "<<min(m1[ind],m2[ind])<<"\n";
+    out << "\n\nОтвет: оптимальная альтернатива x"<<ind+1<<", "<<"мю(x"<<ind+1<<")"<<" = "<<min(m1[ind],m2[ind])<<"\n";
+
+    cout << out.str();
+    ofstream fout("output.txt");
+    fout << out.str();
 }
 
 #ifdef DEBUG
