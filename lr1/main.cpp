@@ -1,5 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <map>
@@ -82,10 +84,24 @@ void calc_priorities(const vector<vector<double>> &matrix,vector<double> *out) {
     norm(*out);
 }
 
+string decimal_comma(double value, int precision) {
+    ostringstream ss;
+    ss << fixed << setprecision(precision) << value;
+    string s = ss.str();
+    replace(s.begin(), s.end(), '.', ',');
+    return s;
+}
+
 void print_ans(const vector<double> &ans){
-    freopen("output.txt", "w", stdout);
     auto el = (int)(max_element(ans.begin(),ans.end()) - ans.begin())+1;
-    cout<<"оптимальная альтернатива x"<<el<<" с приоритетом w"<<el<<" ="<<ans[el-1]<<".";
+    string answer = "Ответ: оптимальная альтернатива x" + to_string(el)
+        + " с приоритетом w" + to_string(el) + " = "
+        + decimal_comma(ans[el-1], 6) + ".";
+
+    cout << answer << "\n";
+
+    ofstream fout("output.txt");
+    fout << answer << "\n";
 }
 
 void solve() {

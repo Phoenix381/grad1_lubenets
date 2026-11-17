@@ -26,6 +26,8 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <map>
@@ -59,8 +61,15 @@ double calc_concordance(const vector<vector<double>>& vctr) {
     return (12.0 * S) / (m * m * (n * n * n - n));
 }
 
+string decimal_comma(double value, int precision = 3) {
+    ostringstream ss;
+    ss << fixed << setprecision(precision) << value;
+    string s = ss.str();
+    replace(s.begin(), s.end(), '.', ',');
+    return s;
+}
+
 void solve() {
-    cout.precision(10);
 
     // Вариант 4 (task_lubenets/prun/LR-4.pdf)
     vector<vector<double>> E = {
@@ -73,8 +82,9 @@ void solve() {
         {2, 1, 6, 4, 5, 8, 7, 3, 9, 10}
     };
 
+    ostringstream out;
     double R_all = calc_concordance(E);
-    cout << "R = " << R_all << "\n";
+    out << "R = " << decimal_comma(R_all) << "\n";
 
     double max_R = -1;
     int best_expert = -1;
@@ -88,7 +98,7 @@ void solve() {
         }
         
         double R_i = calc_concordance(E_excl);
-        cout << "R" << skip + 1 << " = " << R_i << "\n";
+        out << "R" << skip + 1 << " = " << decimal_comma(R_i) << "\n";
         
         if (R_i > max_R) {
             max_R = R_i;
@@ -96,9 +106,14 @@ void solve() {
         }
     }
 
-    cout << "\nОтвет: коэффициент конкордации всей группы R = " << R_all
-         << ", наиболее согласованная группа – без эксперта e" << best_expert
-         << ", R" << best_expert << " = " << max_R << "\n";
+    out << "\nОтвет: коэффициент конкордации всей группы R = " << decimal_comma(R_all)
+        << ", наиболее согласованная группа — без эксперта e" << best_expert
+        << ", R" << best_expert << " = " << decimal_comma(max_R) << ".\n";
+
+    cout << out.str();
+
+    ofstream fout("output.txt");
+    fout << out.str();
 }
 
 #ifdef DEBUG

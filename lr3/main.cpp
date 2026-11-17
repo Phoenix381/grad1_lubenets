@@ -1,5 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <map>
@@ -77,6 +79,15 @@ vector<double> mu(vector<vector<double>> Q){
     return ans;
     
 }
+
+string decimal_comma(double value) {
+    ostringstream ss;
+    ss << setprecision(10) << value;
+    string s = ss.str();
+    replace(s.begin(), s.end(), '.', ',');
+    return s;
+}
+
 void solve() {
     cout.precision(10);
 
@@ -160,7 +171,7 @@ void solve() {
         cout<<"\n";
     }
 
-    cout<<"\nmyu н.д.Q1 ";
+    cout<<"\nμ_н.д.(Q1): ";
     vector<double> m1 = mu(FSPR(Q));
     for(auto a:m1){
         cout<<a<<" ";
@@ -190,14 +201,21 @@ void solve() {
         cout<<"\n";
     }
 
-    cout<<"\nmyu н.д.Q2 ";
+    cout<<"\nμ_н.д.(Q2): ";
     vector<double> m2 = mu(FSPR(Q_2));
     for(auto a:m2){
         cout<<a<<" ";
     }
     int ind = [&]{ int k = 0; for (int i = 1; i < (int)m1.size(); ++i) if (std::min(m1[i],m2[i]) > std::min(m1[k],m2[k])) k = i; return k; }();
 
-    cout << "\n\nОтвет: оптимальная альтернатива x"<<ind+1<<", "<<"мю(x"<<ind+1<<")"<<" = "<<min(m1[ind],m2[ind])<<"\n";
+    string answer = "Ответ: оптимальная альтернатива x" + to_string(ind + 1)
+        + ", μ_н.д.(x" + to_string(ind + 1) + ") = "
+        + decimal_comma(min(m1[ind], m2[ind])) + ".";
+
+    cout << "\n\n" << answer << "\n";
+
+    ofstream fout("output.txt");
+    fout << answer << "\n";
 }
 
 #ifdef DEBUG

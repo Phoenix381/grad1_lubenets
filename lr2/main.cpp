@@ -31,6 +31,8 @@
 */
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <map>
@@ -186,6 +188,14 @@ pair<int,double> ходж(const vector<vector<int>>& matrix){
     return find_max(w);
 }
 
+string decimal_comma(double value) {
+    ostringstream ss;
+    ss << setprecision(10) << value;
+    string s = ss.str();
+    replace(s.begin(), s.end(), '.', ',');
+    return s;
+}
+
 void solve() {
     freopen("input.txt", "r", stdin);
     cout.precision(10);
@@ -194,23 +204,30 @@ void solve() {
     
     read_matrix(&A);
     print_matrix(A);
-    
-    freopen("output.txt", "w", stdout);
-    
+
     pair<int,double> q1 = вальда(A);
-    cout<<"по критерию Вальда: "<<q1.second<<" при стратегии "<<q1.first<<'\n';
-    
     pair<int,double> q2 = сэвиджа(A);
-    cout<<"по критерию Сэвиджа: "<<q2.second<<" при стратегии "<<q2.first<<'\n';
-    
     pair<int,double> q3 = гурвиц(A);
-    cout<<"по критерию Гурвица: "<<q3.second<<" при стратегии "<<q3.first<<'\n';
-    
     pair<int,double> q4 = лаплас(A);
-    cout<<"по критерию Байеса: "<<q4.second<<" при стратегии "<<q4.first<<'\n';
-    
     pair<int,double> q5 = ходж(A);
-    cout<<"по критерию Ходжа: "<<q5.second<<" при стратегии "<<q5.first<<'\n';
+
+    ostringstream answer;
+    answer << "Ответ: решения игры следующие:\n";
+    answer << "по критерию Вальда: " << decimal_comma(q1.second)
+           << " при стратегии " << q1.first << ",\n";
+    answer << "по критерию Сэвиджа: " << decimal_comma(q2.second)
+           << " при стратегии " << q2.first << ",\n";
+    answer << "по критерию Гурвица: " << decimal_comma(q3.second)
+           << " при стратегии " << q3.first << ",\n";
+    answer << "по критерию Байеса – Лапласа: " << decimal_comma(q4.second)
+           << " при стратегии " << q4.first << ",\n";
+    answer << "по критерию Ходжа – Лемана: " << decimal_comma(q5.second)
+           << " при стратегии " << q5.first << ".\n";
+
+    cout << "\n" << answer.str();
+
+    ofstream fout("output.txt");
+    fout << answer.str();
 }
 
 #ifdef DEBUG

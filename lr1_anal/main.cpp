@@ -193,9 +193,14 @@ void writeCard(ofstream& fout, const Card& c, int idx) {
         fout << "\n";
     }
     fout << "Фигур: ";
-    for (int f = 0; f < (int)figures.size(); f++)
-        if (c.count[f] > 0)
-            fout << figures[f].name << "=" << c.count[f] << " ";
+    bool first = true;
+    for (int f = 0; f < (int)figures.size(); f++) {
+        if (c.count[f] > 0) {
+            if (!first) fout << ", ";
+            fout << figures[f].name << "=" << c.count[f];
+            first = false;
+        }
+    }
     fout << "\n\n";
 }
 
@@ -320,15 +325,25 @@ int main() {
     for (int j = 0; j < (int)x.size(); j++) {
         if (x[j] > 0) {
             cout << "x" << j + 1 << " = " << x[j] << " (";
-            for (int f = 0; f < N; f++)
-                if (cards[j].count[f] > 0)
-                    cout << figures[f].name << "=" << cards[j].count[f] << " ";
+            bool first = true;
+            for (int f = 0; f < N; f++) {
+                if (cards[j].count[f] > 0) {
+                    if (!first) cout << ", ";
+                    cout << figures[f].name << "=" << cards[j].count[f];
+                    first = false;
+                }
+            }
             cout << ")\n";
 
             fout << "x" << j + 1 << " = " << x[j] << " (";
-            for (int f = 0; f < N; f++)
-                if (cards[j].count[f] > 0)
-                    fout << figures[f].name << "=" << cards[j].count[f] << " ";
+            first = true;
+            for (int f = 0; f < N; f++) {
+                if (cards[j].count[f] > 0) {
+                    if (!first) fout << ", ";
+                    fout << figures[f].name << "=" << cards[j].count[f];
+                    first = false;
+                }
+            }
             fout << ")\n";
         }
     }
@@ -350,7 +365,10 @@ int main() {
     cout << "Всего листов: " << ans << "\n";
     fout << "Всего листов: " << ans << "\n";
 
+    cout << "\nОтвет: минимальное число листов = " << ans << ".\n";
+    fout << "\nОтвет: минимальное число листов = " << ans << ".\n";
+
     fout.close();
-    cout << "Записано в result.txt\n";
+    cout << "Записано в output.txt\n";
     return 0;
 }
