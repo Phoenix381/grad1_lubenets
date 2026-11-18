@@ -17,12 +17,13 @@ using namespace std;
 bool is_digit(char ch) {
     return ch <= 57 && ch >= 48;
 }
-void print_matrix(const vector<vector<double>> &vctr){
+void print_matrix(ostream &out, const vector<vector<double>> &vctr){
     for(auto r:vctr){
-        for(auto n:r){
-            cout<<n<<" ";
+        for(size_t j = 0; j < r.size(); ++j){
+            if(j) out<<" ";
+            out<<r[j];
         }
-        cout<<'\n';
+        out<<'\n';
     }
 }
 void read_matrix(vector<vector<double>> *vctr) {
@@ -92,45 +93,42 @@ string decimal_comma(double value, int precision) {
     return s;
 }
 
-void print_ans(const vector<double> &ans){
-    auto el = (int)(max_element(ans.begin(),ans.end()) - ans.begin())+1;
-    string answer = "Ответ: оптимальная альтернатива x" + to_string(el)
-        + " с приоритетом w" + to_string(el) + " = "
-        + decimal_comma(ans[el-1], 6) + ".";
-
-    cout << answer << "\n";
-
-    ofstream fout("output.txt");
-    fout << answer << "\n";
-}
-
 void solve() {
     freopen("input.txt", "r", stdin);
-    cout.precision(10);
+
+    ostringstream report;
+    report.precision(10);
+
     vector<vector<double>> E;
     read_matrix(&E);
-    cout << "E:\n";
-    print_matrix(E);
+    report << "E:\n";
+    print_matrix(report, E);
 
     vector<vector<double>> W[7];
     for (int i = 0; i < 7; i++) {
         read_matrix(&W[i]);
-        cout << "W" << i + 1 << ":\n";
-        print_matrix(W[i]);
+        report << "W" << i + 1 << ":\n";
+        print_matrix(report, W[i]);
     }
 
     vector<double> e;
     calc_priorities(E, &e);
-    cout << "\n~e:\n";
-    for (auto a : e) cout << a << " ";
-    cout << "\n";
+    report << "\n~e:\n";
+    for (size_t j = 0; j < e.size(); ++j) {
+        if (j) report << " ";
+        report << e[j];
+    }
+    report << "\n";
 
     vector<vector<double>> w(7);
     for (int i = 0; i < 7; i++) {
         calc_priorities(W[i], &w[i]);
-        cout << "~w" << i + 1 << "\n";
-        for (auto a : w[i]) cout << a << " ";
-        cout << "\n";
+        report << "~w" << i + 1 << "\n";
+        for (size_t j = 0; j < w[i].size(); ++j) {
+            if (j) report << " ";
+            report << w[i][j];
+        }
+        report << "\n";
     }
 
     size_t n = w[0].size();
@@ -139,11 +137,19 @@ void solve() {
         for (size_t j = 0; j < n; j++)
             result[j] += e[i] * w[i][j];
 
-    cout << "\nПриоритеты:\n";
+    report << "\nПриоритеты:\n";
     for (size_t j = 0; j < n; j++)
-        cout << "w " << j + 1 << ": " << result[j] << "\n";
+        report << "w " << j + 1 << ": " << result[j] << "\n";
 
-    print_ans(result);
+    auto el = (size_t)(max_element(result.begin(), result.end()) - result.begin());
+    report << "\nОтвет: оптимальная альтернатива x" << el + 1
+           << " с приоритетом w" << el + 1 << " = "
+           << decimal_comma(result[el], 6) << ".\n";
+
+    cout << report.str();
+
+    ofstream fout("output.txt");
+    fout << report.str();
 }
 
 #ifdef DEBUG

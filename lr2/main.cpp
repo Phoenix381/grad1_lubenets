@@ -45,12 +45,13 @@
 
 using namespace std;
 
-void print_matrix(const vector<vector<int>> &vctr){
+void print_matrix(ostream &out, const vector<vector<int>> &vctr){
     for(auto r:vctr){
-        for(auto n:r){
-            cout<<n<<" ";
+        for(size_t j = 0; j < r.size(); ++j){
+            if(j) out<<" ";
+            out<<r[j];
         }
-        cout<<'\n';
+        out<<'\n';
     }
 }
 
@@ -133,6 +134,11 @@ pair<int,double> find_max(const vector<double>& w){
     return {(el - w.begin()) + 1, *el};
 }
 
+pair<int,double> find_min(const vector<double>& w){
+    auto el = min_element(w.begin(),w.end());
+    return {(el - w.begin()) + 1, *el};
+}
+
 pair<int,double> вальда(const vector<vector<int>>& matrix){
     pair<int,double> ans = {1,*min_element(matrix[0].begin(),matrix[0].end())};
     for (int i = 0; i < matrix.size(); i++){
@@ -196,38 +202,79 @@ string decimal_comma(double value) {
     return s;
 }
 
+void print_values(ostream &out, const string &title, const vector<double> &v) {
+    out << title << "\n";
+    for (size_t i = 0; i < v.size(); ++i)
+        out << "  стратегия " << i + 1 << ": " << decimal_comma(v[i]) << "\n";
+}
+
 void solve() {
     freopen("input.txt", "r", stdin);
-    cout.precision(10);
-    
+
+    ostringstream report;
+
     vector<vector<int>> A;
-    
     read_matrix(&A);
-    print_matrix(A);
 
-    pair<int,double> q1 = вальда(A);
-    pair<int,double> q2 = сэвиджа(A);
-    pair<int,double> q3 = гурвиц(A);
-    pair<int,double> q4 = лаплас(A);
-    pair<int,double> q5 = ходж(A);
+    report << "Матрица A:\n";
+    print_matrix(report, A);
 
-    ostringstream answer;
-    answer << "Ответ: решения игры следующие:\n";
-    answer << "по критерию Вальда: " << decimal_comma(q1.second)
+    vector<int> d = D(A);
+    report << "\nМаксимумы по столбцам D:\n  ";
+    for (size_t j = 0; j < d.size(); ++j) {
+        if (j) report << " ";
+        report << d[j];
+    }
+    report << "\n";
+
+    vector<vector<int>> R = calc_R(A);
+    report << "\nМатрица рисков R:\n";
+    print_matrix(report, R);
+
+    size_t rows = A.size();
+    size_t cols = A[0].size();
+    vector<double> wald(rows), savage(rows), hurwitz(rows), laplace(rows), hodges(rows);
+
+    for (size_t i = 0; i < rows; ++i) {
+        double mn = *min_element(A[i].begin(), A[i].end());
+        double mx = *max_element(A[i].begin(), A[i].end());
+        double avg = accumulate(A[i].begin(), A[i].end(), 0.0) / cols;
+        wald[i] = mn;
+        savage[i] = *max_element(R[i].begin(), R[i].end());
+        hurwitz[i] = (mn + mx) / 2.0;
+        laplace[i] = avg;
+        hodges[i] = (avg + mn) / 2.0;
+    }
+
+    report << "\n";
+    print_values(report, "Критерий Вальда (минимум по строке):", wald);
+    print_values(report, "\nКритерий Сэвиджа (максимум по строке матрицы рисков):", savage);
+    print_values(report, "\nКритерий Гурвица (λ = 1/2):", hurwitz);
+    print_values(report, "\nКритерий Байеса – Лапласа (среднее по строке):", laplace);
+    print_values(report, "\nКритерий Ходжа – Лемана (ν = 1/2):", hodges);
+
+    pair<int,double> q1 = find_max(wald);
+    pair<int,double> q2 = find_min(savage);
+    pair<int,double> q3 = find_max(hurwitz);
+    pair<int,double> q4 = find_max(laplace);
+    pair<int,double> q5 = find_max(hodges);
+
+    report << "\nОтвет: решения игры следующие:\n";
+    report << "по критерию Вальда: " << decimal_comma(q1.second)
            << " при стратегии " << q1.first << ",\n";
-    answer << "по критерию Сэвиджа: " << decimal_comma(q2.second)
+    report << "по критерию Сэвиджа: " << decimal_comma(q2.second)
            << " при стратегии " << q2.first << ",\n";
-    answer << "по критерию Гурвица: " << decimal_comma(q3.second)
+    report << "по критерию Гурвица: " << decimal_comma(q3.second)
            << " при стратегии " << q3.first << ",\n";
-    answer << "по критерию Байеса – Лапласа: " << decimal_comma(q4.second)
+    report << "по критерию Байеса – Лапласа: " << decimal_comma(q4.second)
            << " при стратегии " << q4.first << ",\n";
-    answer << "по критерию Ходжа – Лемана: " << decimal_comma(q5.second)
+    report << "по критерию Ходжа – Лемана: " << decimal_comma(q5.second)
            << " при стратегии " << q5.first << ".\n";
 
-    cout << "\n" << answer.str();
+    cout << report.str();
 
     ofstream fout("output.txt");
-    fout << answer.str();
+    fout << report.str();
 }
 
 #ifdef DEBUG
