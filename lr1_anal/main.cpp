@@ -255,6 +255,7 @@ int main() {
         return ((a * SB + b) * SC + c) * SD + d;
     };
 
+    // DP по числу выкроенных фигур: dp[...] — минимум листов
     vector<int> dp(SA * SB * SC * SD, INF);
     vector<int> from(SA * SB * SC * SD, -1);
     vector<int> pa(SA * SB * SC * SD, -1);
@@ -310,6 +311,7 @@ int main() {
     cout << "\nМинимум листов: " << ans << "\n";
     fout << "Минимум листов: " << ans << "\n\n";
 
+    // восстанавливаем, сколько карт каждого вида использовано
     vector<int> x(cards.size(), 0);
     int a = A, b = B, c = C, d = D;
     while (!(a == 0 && b == 0 && c == 0 && d == 0)) {

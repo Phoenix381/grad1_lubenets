@@ -213,6 +213,7 @@ void solve() {
 
     ostringstream report;
 
+    // матрица выигрышей
     vector<vector<int>> A;
     read_matrix(&A);
 

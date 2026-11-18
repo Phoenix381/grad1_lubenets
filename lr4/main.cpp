@@ -41,6 +41,7 @@
 
 using namespace std;
 
+// коэффициент конкордации Кендалла
 double calc_concordance(const vector<vector<double>>& vctr) {
     int m = vctr.size();
     int n = vctr[0].size();
@@ -72,6 +73,7 @@ string decimal_comma(double value, int precision = 3) {
 void solve() {
 
     // Вариант 4 (task_lubenets/prun/LR-4.pdf)
+    // ранжирования экспертов
     vector<vector<double>> E = {
         {1, 2, 3, 4, 5, 6, 10, 8, 9, 7},
         {1, 2, 6, 4, 5, 3, 7, 8, 9, 10},
@@ -89,6 +91,7 @@ void solve() {
     double max_R = -1;
     int best_expert = -1;
     
+    // по очереди исключаем каждого эксперта
     for (int skip = 0; skip < (int)E.size(); skip++) {
         vector<vector<double>> E_excl;
         for (int i = 0; i < (int)E.size(); i++) {

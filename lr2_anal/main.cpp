@@ -89,6 +89,7 @@ int main(){
 
     auto [flow, cost] = minCostFlow(S, T, total);
 
+    // восстанавливаем потоки по обратным рёбрам
     ostringstream out;
     out << "Поток = " << flow << " / " << total << "\n";
     out << "Минимальная стоимость = " << cost << "\n\n";

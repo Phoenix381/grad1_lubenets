@@ -1,7 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
-#include <fstream>
-#include <sstream>
 #include <string>
 #include <vector>
 #include <map>
@@ -9,7 +7,10 @@
 #include <cmath>
 #include <iomanip>
 #include <algorithm>
-#include <numeric>
+#include <utility>
+#include <cstdlib>
+#include <sstream>
+#include <fstream>
 
 //#define DEBUG
 
@@ -80,48 +81,59 @@ vector<double> mu(vector<vector<double>> Q){
     
 }
 
-// Печать матрицы в формате принятого примера:
-// строки x1..xN, затем max по столбцу и степени недоминируемости mu.
-void print_table(ostream& out, const string& title,
-                 const vector<vector<double>>& Q,
-                 const vector<double>& mu_row) {
-    out << title << "\n";
+// Дополняет матрицу строками максимумов по столбцам и степеней недоминируемости
+vector<vector<double>> withMaxMu(const vector<vector<double>>& Q) {
+    vector<vector<double>> M = Q;
+    int n = Q.size();
+    int m = Q[0].size();
+
+    vector<double> maxRow(m), muRow(m);
+    for (int j = 0; j < m; j++)
+    {
+        double mx = 0;
+        for (int i = 0; i < n; i++)
+            mx = max(mx, Q[i][j]);
+
+        maxRow[j] = mx;             // максимум по столбцу
+        muRow[j] = 1 - mx;          // степень недоминируемости
+    }
+
+    M.push_back(maxRow);
+    M.push_back(muRow);
+    return M;
+}
+
+// Вывод матрицы в формате эталонной программы: шапка x1..xn, строки x1..xn, max, mu
+void printMatrix(const vector<vector<double>>& M, ostream& out) {
+    int n = M.size();
+    int m = M[0].size();
+
     out << "\t";
-    int cols = (int)Q[0].size();
-    for (int j = 0; j < cols; ++j) {
+    for (int j = 0; j < m; j++)
+    {
         out << "x" << j + 1;
-        if (j + 1 < cols) out << "\t";
+        if (j + 1 < m) out << "\t\t";
     }
     out << "\n";
 
-    for (int i = 0; i < (int)Q.size(); ++i) {
-        out << "x" << i + 1 << "\t";
-        for (int j = 0; j < cols; ++j) {
-            out << fixed << setprecision(2) << Q[i][j];
-            if (j + 1 < cols) out << "\t";
+    for (int i = 0; i < n; i++)
+    {
+        if (i == n - 2)       out << "max\t";
+        else if (i == n - 1)  out << "mu\t";
+        else                  out << "x" << i + 1 << "\t";
+
+        for (int j = 0; j < m; j++)
+        {
+            out << fixed << setprecision(2) << M[i][j];
+            if (j + 1 < m) out << "\t";
         }
         out << "\n";
     }
-
-    out << "max\t";
-    for (int j = 0; j < cols; ++j) {
-        double mx = 0;
-        for (int i = 0; i < (int)Q.size(); ++i)
-            mx = max(mx, Q[i][j]);
-        out << fixed << setprecision(2) << mx;
-        if (j + 1 < cols) out << "\t";
-    }
-
-    out << "\nmu\t";
-    for (int j = 0; j < cols; ++j) {
-        out << fixed << setprecision(2) << mu_row[j];
-        if (j + 1 < cols) out << "\t";
-    }
-    out << "\n\n";
+    out << "\n";
 }
 
 void solve() {
-    cout.precision(10);
+    ostringstream out;
 
     // Вариант 4 (task_lubenets/prun/LR-3.pdf)
     vector<vector<double>> L = {{0.1, 0.2, 0.1, 0.1, 0.3, 0.1, 0.1}};
@@ -182,66 +194,81 @@ void solve() {
         {0.7, 0.3, 0.4, 0.8, 0.6, 1}
     };
 
+    // Q1 — пересечение матриц парных сравнений
     vector<vector<double>> Q = R1;
     for (auto *m : {&R2, &R3, &R4, &R5, &R6, &R7}) {
         Q = intersect(Q, *m);
     }
 
-    vector<vector<double>> Q1s = FSPR(Q);
-    vector<double> m1 = mu(Q1s);
+    // Q2 — свёртка матриц с весами критериев
+    vector<vector<double>> Q_2 = Q2(R1,L[0][0]);
 
-    vector<vector<double>> Q_2 = Q2(R1, L[0][0]);
     for (auto &m : {std::pair{&R2, L[0][1]}, std::pair{&R3, L[0][2]},
                     std::pair{&R4, L[0][3]}, std::pair{&R5, L[0][4]},
                     std::pair{&R6, L[0][5]}, std::pair{&R7, L[0][6]}}) {
-        Q_2 = summ(Q_2, Q2(*m.first, m.second));
+        Q_2 = summ(Q_2,Q2(*m.first, m.second));
     }
 
+    // Строгие отношения предпочтения Q1s, Q2s и степени недоминируемости по ним
+    vector<vector<double>> Q1s = FSPR(Q);
     vector<vector<double>> Q2s = FSPR(Q_2);
+    vector<double> m1 = mu(Q1s);
     vector<double> m2 = mu(Q2s);
 
-    vector<double> mu_total(m1.size());
-    for (int j = 0; j < (int)m1.size(); ++j)
-        mu_total[j] = min(m1[j], m2[j]);
+    // Матрицы в формате эталонной программы: Q1s и Q2s со строками max и mu
+    out << "Q1 s:\n";
+    printMatrix(withMaxMu(Q1s), out);
 
-    int ind = 0;
-    for (int i = 1; i < (int)mu_total.size(); ++i)
-        if (mu_total[i] > mu_total[ind]) ind = i;
+    out << "Q2 s:\n";
+    printMatrix(withMaxMu(Q2s), out);
 
-    ostringstream report;
-    print_table(report, "Q1 s:", Q1s, m1);
-    print_table(report, "Q2 s:", Q2s, m2);
-
-    report << "\t\t";
-    int cols = (int)mu_total.size();
-    for (int j = 0; j < cols; ++j) {
-        report << "x" << j + 1;
-        if (j + 1 < cols) report << "\t\t";
+    // Сводная таблица: степени недоминируемости по Q1, по Q2 и итоговые
+    out << "\t\t";
+    for (int j = 0; j < (int)m1.size(); j++)
+    {
+        out << "x" << j + 1;
+        if (j + 1 < (int)m1.size()) out << "\t\t";
     }
-    report << "\nmu Q1\t";
-    for (int j = 0; j < cols; ++j) {
-        report << fixed << setprecision(2) << m1[j];
-        if (j + 1 < cols) report << "\t";
+    out << "\n";
+
+    out << "mu Q1\t";
+    for (int j = 0; j < (int)m1.size(); j++)
+    {
+        out << fixed << setprecision(2) << m1[j];
+        if (j + 1 < (int)m1.size()) out << "\t";
     }
-    report << "\nmu Q2\t";
-    for (int j = 0; j < cols; ++j) {
-        report << fixed << setprecision(2) << m2[j];
-        if (j + 1 < cols) report << "\t";
+    out << "\n";
+
+    out << "mu Q2\t";
+    for (int j = 0; j < (int)m2.size(); j++)
+    {
+        out << fixed << setprecision(2) << m2[j];
+        if (j + 1 < (int)m2.size()) out << "\t";
     }
-    report << "\nmu\t\t";
-    for (int j = 0; j < cols; ++j) {
-        report << fixed << setprecision(2) << mu_total[j];
-        if (j + 1 < cols) report << "\t";
+    out << "\n";
+
+    // Берём альтернативу с лучшим минимумом из двух оценок; при равенстве — первую
+    double maxX = 0;
+    int maxI = 0;
+    out << "mu\t\t";
+    for (int j = 0; j < (int)m1.size(); j++)
+    {
+        double v = min(m1[j], m2[j]);
+        if (v > maxX)
+        {
+            maxX = v;
+            maxI = j;
+        }
+        out << fixed << setprecision(2) << v;
+        if (j + 1 < (int)m1.size()) out << "\t";
     }
 
-    report << "\n\nОтвет: оптимальная альтернатива - x" << ind + 1
-           << ", mu(x" << ind + 1 << ") = "
-           << fixed << setprecision(2) << mu_total[ind] << ".\n";
+    out << "\n\nОтвет: оптимальная альтернатива - x" << maxI + 1
+        << ", mu(x" << maxI + 1 << ") = " << maxX << ".\n";
 
-    cout << report.str();
-
+    cout << out.str();
     ofstream fout("output.txt");
-    fout << report.str();
+    fout << out.str();
 }
 
 #ifdef DEBUG

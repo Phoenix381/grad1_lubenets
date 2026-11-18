@@ -99,6 +99,7 @@ void solve() {
     ostringstream report;
     report.precision(10);
 
+    // матрица парных сравнений критериев
     vector<vector<double>> E;
     read_matrix(&E);
     report << "E:\n";
