@@ -80,9 +80,54 @@ vector<double> mu(vector<vector<double>> Q){
     return ans;
     
 }
+
+// Дополняет матрицу строками максимумов по столбцам и степеней недоминируемости
+vector<vector<double>> withMaxMu(const vector<vector<double>>& Q) {
+    vector<vector<double>> M = Q;
+    int n = Q.size();
+    int m = Q[0].size();
+
+    vector<double> maxRow(m), muRow(m);
+    for (int j = 0; j < m; j++)
+    {
+        double mx = 0;
+        for (int i = 0; i < n; i++)
+            mx = max(mx, Q[i][j]);
+
+        maxRow[j] = mx;             // максимум по столбцу
+        muRow[j] = 1 - mx;          // степень недоминируемости
+    }
+
+    M.push_back(maxRow);
+    M.push_back(muRow);
+    return M;
+}
+
+// Вывод матрицы в формате эталонной программы: шапка x1..xn, строки x1..xn, max, mu
+void printMatrix(const vector<vector<double>>& M, ostream& out) {
+    int n = M.size();
+    int m = M[0].size();
+
+    out << "\t";
+    for (int j = 0; j < m; j++)
+        out << "x" << j + 1 << "\t\t";
+    out << "\n";
+
+    for (int i = 0; i < n; i++)
+    {
+        if (i == n - 2)       out << "max\t";
+        else if (i == n - 1)  out << "mu\t";
+        else                  out << "x" << i + 1 << "\t";
+
+        for (int j = 0; j < m; j++)
+            out << fixed << setprecision(2) << M[i][j] << "\t";
+        out << "\n";
+    }
+    out << "\n";
+}
+
 void solve() {
     ostringstream out;
-    out.precision(10);
 
     // Вариант 4 (task_lubenets/prun/LR-3.pdf)
     vector<vector<double>> L = {{0.1, 0.2, 0.1, 0.1, 0.3, 0.1, 0.1}};
@@ -149,31 +194,8 @@ void solve() {
         Q = intersect(Q, *m);
     }
 
-    out<<"Q1\n";
-    for(auto a:(Q)){
-        for(auto aa :a){
-            out<<aa<<" ";
-        }
-        out<<"\n";
-    }
-
-    out<<"\n Q1s\n";
-    for(auto a:FSPR(Q)){
-        for(auto aa :a){
-            out<<aa<<" ";
-        }
-        out<<"\n";
-    }
-
-    out<<"\nmyu н.д.Q1 ";
-    // степени недоминируемости по Q1
-    vector<double> m1 = mu(FSPR(Q));
-    for(auto a:m1){
-        out<<a<<" ";
-    }
     // Q2 — свёртка матриц с весами критериев
     vector<vector<double>> Q_2 = Q2(R1,L[0][0]);
-    out<<"\n"<<L[0][0]<<"\n";
 
     for (auto &m : {std::pair{&R2, L[0][1]}, std::pair{&R3, L[0][2]},
                     std::pair{&R4, L[0][3]}, std::pair{&R5, L[0][4]},
@@ -181,31 +203,52 @@ void solve() {
         Q_2 = summ(Q_2,Q2(*m.first, m.second));
     }
 
-    out<<"\nQ2\n";
-    for(auto a:Q_2){
-        for(auto aa :a){
-            out<<aa<<" ";
+    // Строгие отношения предпочтения Q1s, Q2s и степени недоминируемости по ним
+    vector<vector<double>> Q1s = FSPR(Q);
+    vector<vector<double>> Q2s = FSPR(Q_2);
+    vector<double> m1 = mu(Q1s);
+    vector<double> m2 = mu(Q2s);
+
+    // Матрицы в формате эталонной программы: Q1s и Q2s со строками max и mu
+    out << "Q1 s:\n";
+    printMatrix(withMaxMu(Q1s), out);
+
+    out << "Q2 s:\n";
+    printMatrix(withMaxMu(Q2s), out);
+
+    // Сводная таблица: степени недоминируемости по Q1, по Q2 и итоговые
+    out << "\t\t";
+    for (int j = 0; j < (int)m1.size(); j++)
+        out << "x" << j + 1 << "\t\t";
+    out << "\n";
+
+    out << "mu Q1\t";
+    for (double v : m1)
+        out << fixed << setprecision(2) << v << "\t";
+    out << "\n";
+
+    out << "mu Q2\t";
+    for (double v : m2)
+        out << fixed << setprecision(2) << v << "\t";
+    out << "\n";
+
+    // Берём альтернативу с лучшим минимумом из двух оценок; при равенстве — первую
+    double maxX = 0;
+    int maxI = 0;
+    out << "mu\t\t";
+    for (int j = 0; j < (int)m1.size(); j++)
+    {
+        double v = min(m1[j], m2[j]);
+        if (v > maxX)
+        {
+            maxX = v;
+            maxI = j;
         }
-        out<<"\n";
+        out << fixed << setprecision(2) << v << "\t";
     }
 
-    out<<"\n Q2s\n";
-    for(auto a:FSPR(Q_2)){
-        for(auto aa :a){
-            out<<aa<<" ";
-        }
-        out<<"\n";
-    }
-
-    out<<"\nmyu н.д.Q2 ";
-    vector<double> m2 = mu(FSPR(Q_2));
-    for(auto a:m2){
-        out<<a<<" ";
-    }
-    // берём альтернативу с лучшим минимумом из двух оценок
-    int ind = [&]{ int k = 0; for (int i = 1; i < (int)m1.size(); ++i) if (std::min(m1[i],m2[i]) > std::min(m1[k],m2[k])) k = i; return k; }();
-
-    out << "\n\nОтвет: оптимальная альтернатива x"<<ind+1<<", "<<"мю(x"<<ind+1<<")"<<" = "<<min(m1[ind],m2[ind])<<"\n";
+    out << "\n\nОтвет: оптимальная альтернатива - x" << maxI + 1
+        << ", mu(x" << maxI + 1 << ") = " << maxX << ".\n";
 
     cout << out.str();
     ofstream fout("output.txt");
